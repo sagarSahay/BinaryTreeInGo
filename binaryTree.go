@@ -15,8 +15,9 @@ type pair struct {
 	diameter int
 }
 
-type balancedPair struct{
-	
+type balancedPair struct {
+	height   int
+	balanced bool
 }
 
 func buildTree(root *node) *node {
@@ -44,13 +45,6 @@ func height(root *node) int {
 	var heightLeft = height(root.left)
 
 	return Max(heightRight, heightLeft) + 1
-}
-
-func Max(x, y int) int {
-	if x < y {
-		return y
-	}
-	return x
 }
 
 func (rootWithTree node) IsEmpty() bool {
@@ -185,6 +179,29 @@ func fastDiameter(root *node) *pair {
 	return p
 }
 
+func isHeightBalanced(root *node) *balancedPair {
+	p := new(balancedPair)
+	if root == nil {
+		p.balanced = true
+		p.height = 0
+		return p
+	}
+
+	left := isHeightBalanced(root.left)
+	right := isHeightBalanced(root.right)
+
+	p.height = Max(left.height, right.height) + 1
+
+	if left.balanced && right.balanced && Abs(left.height-right.height) <= 2 {
+		p.balanced = true
+	}else {
+		p.balanced = false
+	}
+	return p;
+}
+
+
+
 func main() {
 	fmt.Println("Building a binary tree")
 	var root *node
@@ -206,4 +223,5 @@ func main() {
 	fmt.Println("Sum of all the node is ", sum(root))
 	fmt.Println("Diameter of tree is ", diameter(root))
 	fmt.Println("Fast diameter of tree is ", fastDiameter(root).diameter)
+	fmt.Println("Is the tree balanced ", isHeightBalanced(root).balanced)
 }
